@@ -1,6 +1,7 @@
 import React from "react";
 import Square from "./Square";
 import { Box } from "@material-ui/core";
+import { DIMS_LENGTH, DIMS_WIDTH, PLAYER_X } from "../constants";
 const Board = ({ squares, onClick }) => {
   const getEmptySquares = (grid) => {
     let emptySquares = [];
@@ -15,7 +16,7 @@ const Board = ({ squares, onClick }) => {
     return emptySquares;
   };
   const isEmpty = (grid) => {
-    
+    return grid.getEmptySquares === DIMS_LENGTH * DIMS_WIDTH;
   };
   const clone = () => {
     return squares.map((arr) => arr.slice());
@@ -30,6 +31,7 @@ const Board = ({ squares, onClick }) => {
               let borderLeft;
               let borderBottom;
               let borderRight;
+              const activeSquare = col !== null;
               if (i === 0) {
                 borderBottom = 1;
                 if (j === 0 || j !== row.length - 1) {
@@ -48,14 +50,14 @@ const Board = ({ squares, onClick }) => {
               }
               return (
                 <Square
-                  value={col}
+                  value={activeSquare && (col === PLAYER_X ? "X" : "O")}
                   borderLeft={borderLeft}
                   borderBottom={borderBottom}
                   borderTop={borderTop}
                   borderRight={borderRight}
                   key={(i, j)}
                   onClick={() => onClick(i, j)}
-                ></Square>
+                />
               );
             })}
           </Box>
