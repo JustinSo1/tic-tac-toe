@@ -7,11 +7,17 @@ import {
   PLAYER_X,
   PLAYER_O,
 } from "../constants";
-import { switchPlayer, getRandomInt } from "../helpers";
+import { switchPlayer, getRandomInt, calculateWinner } from "../helpers";
 // Implement better buttons
 const arr = Array(DIMS_LENGTH)
   .fill(null)
   .map(() => new Array(DIMS_WIDTH).fill(null));
+
+const testGrid = [
+  [1, 2],
+  [3, 1],
+  [0, 3],
+];
 const Game = () => {
   const [grid, setGrid] = useState([arr]);
   const [players, setPlayers] = useState({ human: null, computer: null });
@@ -42,15 +48,16 @@ const Game = () => {
     if (!grid[stepNumber][row][col] && nextMove === players.human) {
       move(row, col, players.human);
       setNextMove(players.computer);
+      calculateWinner(testGrid, 2);
     }
   };
 
   const computerMove = useCallback(() => {
-    let row = getRandomInt(0, 4);
-    let col = getRandomInt(0, 4);
+    let row = getRandomInt(0, DIMS_LENGTH - 1);
+    let col = getRandomInt(0, DIMS_WIDTH - 1);
     while (grid[stepNumber][row][col]) {
-      row = getRandomInt(0, 4);
-      col = getRandomInt(0, 4);
+      row = getRandomInt(0, DIMS_LENGTH - 1);
+      col = getRandomInt(0, DIMS_WIDTH - 1);
     }
     move(row, col, players.computer);
     setNextMove(players.human);
