@@ -1,37 +1,63 @@
 import { PLAYER_O, PLAYER_X, DRAW } from "./constants";
 export function calculateWinner(squares) {
-  let amtRequiredToWin = squares[0].length;
+  let horizontalCheck = squares[0].length;
+  let verticalCheck = squares.length;
 
-  let horizontalCheck;
-  let verticalCheck;
   // Horizontal check
+  // let amtRequiredToWin = squares[0].length;
+  // console.log(amtRequiredToWin)
+  let out = [];
+  let group = [];
   for (let row = 0; row < squares.length; ++row) {
-    horizontalCheck = amtRequiredToWin;
+    group = [];
     for (let col = 0; col < squares[0].length; ++col) {
-      if (squares[row][0] === squares[row][col]) {
-        --horizontalCheck;
-      }
+      group.push(squares[row][col]);
     }
-    if (horizontalCheck === 0) {
-      return squares[row][0];
-      // console.log(squares[row][0]);
+    out.push(group);
+  }
+
+  console.log("horiz",out);
+  for (let i = 0; i < out.length; ++i) {
+    if (out[i].length === horizontalCheck) {
+      if (out[i].every((element, index, arr) => element && element === arr[0] )) {
+        return out[i][0];
+      }
     }
   }
 
-  amtRequiredToWin = squares.length;
   // Vertical Check
+  out = [];
   for (let col = 0; col < squares[0].length; ++col) {
-    verticalCheck = amtRequiredToWin;
+    group = [];
     for (let row = 0; row < squares.length; ++row) {
-      if (squares[0][col] === squares[row][col]) {
-        --verticalCheck;
+      group.push(squares[row][col]);
+    }
+    out.push(group);
+  }
+  console.log("vert", out);
+
+  for (let i = 0; i < out.length; ++i) {
+    if (out[i].length === verticalCheck) {
+      if (out[i].every((element, index, arr) => element &&  element === arr[0])) {
+        return out[i][0];
       }
     }
-    if (verticalCheck === 0) {
-      return squares[0][col];
-      // console.log(squares[0][col]);
-    }
   }
+
+  // amtRequiredToWin = squares.length;
+  // // Vertical Check
+  // for (let col = 0; col < squares[0].length; ++col) {
+  //   verticalCheck = amtRequiredToWin;
+  //   for (let row = 0; row < squares.length; ++row) {
+  //     if (squares[0][col] === squares[row][col]) {
+  //       --verticalCheck;
+  //     }
+  //   }
+  //   if (verticalCheck === 0) {
+  //     return squares[0][col];
+  //     // console.log(squares[0][col]);
+  //   }
+  // }
 
   // squares = [
   //   [5, 6, 7, 8, 9],
@@ -49,9 +75,9 @@ export function calculateWinner(squares) {
 
   let diagonalCheck = Math.min(rows, cols);
 
-  let out = [];
+  out = [];
   for (let i = 1 - rows; i < cols; i++) {
-    let group = [];
+    group = [];
     for (let j = 0; j < rows; j++) {
       if (i + j >= 0 && i + j < cols) {
         group.push(squares[j][i + j]);
@@ -63,7 +89,7 @@ export function calculateWinner(squares) {
   // console.log("out", out);
   for (let i = 0; i < out.length; ++i) {
     if (out[i].length === diagonalCheck) {
-      if (out[i].every((element, index, arr) => element === arr[0])) {
+      if (out[i].every((element, index, arr) => element && element === arr[0])) {
         return out[i][0];
         // console.log(out[i][0]);
       }
@@ -85,7 +111,7 @@ export function calculateWinner(squares) {
   for (let slice = 0; slice < rows + cols - 1; ++slice) {
     let z1 = slice < cols ? 0 : slice - cols + 1;
     let z2 = slice < rows ? 0 : slice - rows + 1;
-    let group = [];
+    group = [];
     for (let j = slice - z2; j >= z1; --j) {
       group.push(squares[j][slice - j]);
     }
@@ -94,7 +120,7 @@ export function calculateWinner(squares) {
   // console.log("out1", out);
   for (let i = 0; i < out.length; ++i) {
     if (out[i].length === diagonalCheck) {
-      if (out[i].every((element, index, arr) => element === arr[0])) {
+      if (out[i].every((element, index, arr) => element && element === arr[0])) {
         return out[i][0];
         // console.log(out[i][0]);
       }
@@ -105,18 +131,18 @@ export function calculateWinner(squares) {
   }
   return null;
 }
- const getEmptySquares = (grid) => {
-    let emptySquares = [];
-    grid.forEach((row, i) => {
-      row.forEach((ele, j) => {
-        if (ele === null) {
-          emptySquares = [...emptySquares, [i, j]];
-        }
-      });
+const getEmptySquares = (grid) => {
+  let emptySquares = [];
+  grid.forEach((row, i) => {
+    row.forEach((ele, j) => {
+      if (ele === null) {
+        emptySquares = [...emptySquares, [i, j]];
+      }
     });
-    // console.log(emptySquares);
-    return emptySquares;
-  };
+  });
+  // console.log(emptySquares);
+  return emptySquares;
+};
 export const getRandomInt = (min, max) => {
   min = Math.ceil(min);
   max = Math.floor(max);
