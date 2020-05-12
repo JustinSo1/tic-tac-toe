@@ -1,6 +1,6 @@
 export const SQUARE_DIMS = 100;
-export const DIMS_WIDTH = 5;
-export const DIMS_LENGTH = 5;
+export const DIMS_WIDTH = Math.floor(Math.random() * 5) + 1; 
+export const DIMS_LENGTH = Math.floor(Math.random() * 5) + 1; 
 export const DRAW = 0;
 export const PLAYER_X = 1;
 export const PLAYER_O = 2;
