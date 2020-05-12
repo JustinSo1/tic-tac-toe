@@ -1,26 +1,9 @@
 import React from "react";
 import Square from "./Square";
 import { Box } from "@material-ui/core";
-import { DIMS_LENGTH, DIMS_WIDTH, PLAYER_X } from "../constants";
+import { PLAYER_X } from "../constants";
 const Board = ({ squares, onClick }) => {
-  // const getEmptySquares = (grid) => {
-  //   let emptySquares = [];
-  //   grid.forEach((row, i) => {
-  //     row.forEach((ele, j) => {
-  //       if (ele === null) {
-  //         emptySquares = [...emptySquares, [i, j]];
-  //       }
-  //     });
-  //   });
-  //   console.log(emptySquares);
-  //   return emptySquares;
-  // };
-  // const isEmpty = (grid) => {
-  //   return grid.getEmptySquares === DIMS_LENGTH * DIMS_WIDTH;
-  // };
-  // const clone = () => {
-  //   return squares.map((arr) => arr.slice());
-  // };
+
   return (
     <div>
       {squares.map((row, i) => {

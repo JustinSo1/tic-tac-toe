@@ -1,10 +1,5 @@
-import { PLAYER_O, PLAYER_X } from "./constants";
+import { PLAYER_O, PLAYER_X, DRAW } from "./constants";
 export function calculateWinner(squares) {
-  squares = [
-    [1, 6, 8, 3, 10],
-    [1, 5, 6, 5, 10],
-    [2, 2, 5, 2, 2],
-  ];
   let amtRequiredToWin = squares[0].length;
 
   let horizontalCheck;
@@ -105,7 +100,23 @@ export function calculateWinner(squares) {
       }
     }
   }
+  if (getEmptySquares(squares).length === 0) {
+    return DRAW;
+  }
+  return null;
 }
+ const getEmptySquares = (grid) => {
+    let emptySquares = [];
+    grid.forEach((row, i) => {
+      row.forEach((ele, j) => {
+        if (ele === null) {
+          emptySquares = [...emptySquares, [i, j]];
+        }
+      });
+    });
+    // console.log(emptySquares);
+    return emptySquares;
+  };
 export const getRandomInt = (min, max) => {
   min = Math.ceil(min);
   max = Math.floor(max);

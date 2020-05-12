@@ -6,24 +6,36 @@ import {
   GAME_STATES,
   PLAYER_X,
   PLAYER_O,
+  DRAW,
 } from "../constants";
 import { switchPlayer, getRandomInt, calculateWinner } from "../helpers";
-// Implement better buttons
+import { Button } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import Modal from "@material-ui/core/Modal";
+import Backdrop from "@material-ui/core/Backdrop";
+import Fade from "@material-ui/core/Fade";
+
 const arr = Array(DIMS_LENGTH)
   .fill(null)
   .map(() => new Array(DIMS_WIDTH).fill(null));
 
-const testGrid = [
-  [1, 2],
-  [3, 1],
-  [0, 3],
-];
 const Game = () => {
   const [grid, setGrid] = useState([arr]);
   const [players, setPlayers] = useState({ human: null, computer: null });
   const [stepNumber, setStepNumber] = useState(0);
   const [nextMove, setNextMove] = useState(null);
   const [gameState, setGameState] = useState(GAME_STATES.notStarted);
+  const [winner, setWinner] = useState(null);
+  const [open, setOpen] = useState(false);
+  const classes = useStyles();
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   const choosePlayer = (option) => {
     setPlayers({ human: option, computer: switchPlayer(option) });
@@ -44,11 +56,16 @@ const Game = () => {
     },
     [gameState, stepNumber, grid]
   );
+  const startNewGame = () => {
+    setGameState(GAME_STATES.notStarted);
+    setGrid([arr]);
+    setStepNumber(0);
+  };
+
   const playerMove = (row, col) => {
     if (!grid[stepNumber][row][col] && nextMove === players.human) {
       move(row, col, players.human);
       setNextMove(players.computer);
-      calculateWinner(testGrid, 2);
     }
   };
 
@@ -71,7 +88,9 @@ const Game = () => {
       const destination = move ? `Go to move #${move}` : "Go to start";
       return (
         <li key={move}>
-          <button onClick={() => jumpTo(move)}>{destination}</button>
+          <Button {...buttonStyle} onClick={() => jumpTo(move)}>
+            {destination}
+          </Button>
         </li>
       );
     });
@@ -83,7 +102,7 @@ const Game = () => {
       nextMove === players.computer &&
       gameState !== GAME_STATES.over
     ) {
-      // Delay computer moves to make them more natural
+      // Delay the computer's movement to prevent instantaneous movement
       timeout = setTimeout(() => {
         computerMove();
       }, 500);
@@ -91,37 +110,100 @@ const Game = () => {
     return () => timeout && clearTimeout(timeout);
   }, [nextMove, computerMove, players.computer, gameState]);
 
-  return gameState === GAME_STATES.notStarted ? (
-    <div>
-      <button onClick={() => choosePlayer(PLAYER_X)}>X</button>
-      <p>or</p>
-      <button onClick={() => choosePlayer(PLAYER_O)}>O</button>
-    </div>
-  ) : (
-    <>
-      <Board squares={grid[stepNumber]} onClick={playerMove} />
-      <div>{renderMoves()}</div>
-    </>
-  );
+  useEffect(() => {
+    const winner = calculateWinner(grid[stepNumber]);
+    // console.log(winner);
+    const declareWinner = (winner) => {
+      let winnerStr;
+      switch (winner) {
+        case PLAYER_X:
+          winnerStr = "Player X wins!";
+          break;
+        case PLAYER_O:
+          winnerStr = "Player O wins!";
+          break;
+        case DRAW:
+        default:
+          winnerStr = "It's a draw";
+      }
+      setGameState(GAME_STATES.over);
+      setWinner(winnerStr);
+    };
+
+    if (winner !== null && gameState !== GAME_STATES.over) {
+      declareWinner(winner);
+    }
+  }, [gameState, grid, nextMove, stepNumber]);
+
+  switch (gameState) {
+    case GAME_STATES.notStarted:
+    default:
+      return (
+        <div>
+          <Button {...buttonStyle} onClick={() => choosePlayer(PLAYER_X)}>
+            X
+          </Button>
+          <p>or</p>
+          <Button {...buttonStyle} onClick={() => choosePlayer(PLAYER_O)}>
+            O
+          </Button>
+        </div>
+      );
+    case GAME_STATES.inProgress:
+      return (
+        <>
+          <Board squares={grid[stepNumber]} onClick={playerMove} />
+          <div>{renderMoves()}</div>
+        </>
+      );
+    case GAME_STATES.over:
+      return (
+        <div>
+          <Button {...buttonStyle} onClick={handleOpen}>
+            Result
+          </Button>
+          <Modal
+            aria-labelledby="title"
+            aria-describedby="description"
+            className={classes.modal}
+            open={open}
+            onClose={handleClose}
+            closeAfterTransition
+            BackdropComponent={Backdrop}
+            BackdropProps={{
+              timeout: 500,
+            }}
+          >
+            <Fade in={open}>
+              <div className={classes.paper}>
+                <h2 id="title">{winner}</h2>
+                <p id="description">Refresh the page to restart the game!</p>
+              </div>
+            </Fade>
+          </Modal>
+          <Button {...buttonStyle} onClick={startNewGame}>
+            Start over
+          </Button>
+        </div>
+      );
+  }
 };
 export default Game;
-// const SQUARE_DIMS = 100;
-// const Container = styled.div`
-//   display: flex;
-//   justify-content: center;
-//   width: ${({ dims }) => `${dims * (SQUARE_DIMS + 5)}px`};
-//   flex-flow: wrap;
-//   position: relative;
-// `;
 
-// const SQUARE = 0;
-// const Box = styled.div`
-//   ${palette}
-//   ${spacing}
-//   ${borders}
-//   ${display}
-//   ${flexbox}
-// //   background-color: indianred;
-// //   border: 0.5rem solid black;
-// `;
-// Can trry inheritance
+const buttonStyle = {
+  variant: "contained",
+  color: "primary",
+};
+const useStyles = makeStyles((theme) => ({
+  modal: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  paper: {
+    backgroundColor: theme.palette.background.paper,
+    border: "2px solid #000",
+    boxShadow: theme.shadows[5],
+    padding: theme.spacing(2, 4, 3),
+  },
+}));
