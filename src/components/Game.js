@@ -81,14 +81,6 @@ const Game = () => {
   };
 
   const computerMove = useCallback(() => {
-    // let row = getRandomInt(0, DIMS_LENGTH - 1);
-    // let col = getRandomInt(0, DIMS_WIDTH - 1);
-    // while (grid[stepNumber][row][col]) {
-    //   row = getRandomInt(0, DIMS_LENGTH - 1);
-    //   col = getRandomInt(0, DIMS_WIDTH - 1);
-    // }
-    // move(row, col, players.computer);
-    // setNextMove(players.human);
     const gridCopy = cloneGrid(grid[stepNumber]);
     const empty = isEmpty(grid[stepNumber]);
     let row = 0;
@@ -152,7 +144,6 @@ const Game = () => {
       move(row, col, players.computer);
       setNextMove(players.human);
     }
-    // const col = empty ? getRandomInt(0, DIMS_WIDTH - 1) : minimax(gridCopy, players.computer)[1];
   }, [move, grid, players, stepNumber]);
 
   const jumpTo = (step) => {
@@ -190,7 +181,6 @@ const Game = () => {
 
   useEffect(() => {
     const winner = calculateWinner(grid[stepNumber]);
-    // console.log(winner);
     const declareWinner = (winner) => {
       let winnerStr;
       switch (winner) {

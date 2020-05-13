@@ -3,10 +3,8 @@ import Box from "@material-ui/core/Box";
 import { SQUARE_DIMS } from "../constants";
 
 const defaultProps = {
-  // bgcolor: "grey.300",
   color: "black",
   p: 1,
-  // m: 1,
   borderColor: "primary",
   width: SQUARE_DIMS,
   height: SQUARE_DIMS,
