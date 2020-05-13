@@ -19,7 +19,17 @@ Material UI (v4.9.14 or above)
 ReactJs (16.13.1 or above)
 
 ### Images
-![Image of StartScreen](/images/docs/images/StartScreen.png)
+This is the start screen of the webpage
+
+![Image of StartScreen](/docs/images/StartScreen.png)
+
+This is the screen when playing the game
+
+![Image while playing the game](/docs/images/PlayingImg.png)
+
+This is the screen when the game has concluded
+
+![Image when game is finished](/docs/images/EndScreen.png)
 
 ## Built With
 
