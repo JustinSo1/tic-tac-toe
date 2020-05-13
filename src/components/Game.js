@@ -7,13 +7,22 @@ import {
   DRAW,
   DIMS_LENGTH,
   DIMS_WIDTH,
+  GAME_MODES,
 } from "../constants";
-import { switchPlayer, getRandomInt, calculateWinner } from "../helpers";
-import { Button } from "@material-ui/core";
+import {
+  switchPlayer,
+  getRandomInt,
+  calculateWinner,
+  cloneGrid,
+  isEmpty,
+  getEmptySquares,
+} from "../helpers";
+import { Button, Box } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
+import { minimax } from "../minimax";
 
 const arr = Array(DIMS_LENGTH)
   .fill(null)
@@ -27,6 +36,7 @@ const Game = () => {
   const [gameState, setGameState] = useState(GAME_STATES.notStarted);
   const [winner, setWinner] = useState(null);
   const [open, setOpen] = useState(false);
+  const [mode, setMode] = useState(GAME_MODES.medium);
 
   const classes = useStyles();
 
@@ -71,14 +81,78 @@ const Game = () => {
   };
 
   const computerMove = useCallback(() => {
-    let row = getRandomInt(0, DIMS_LENGTH - 1);
-    let col = getRandomInt(0, DIMS_WIDTH - 1);
-    while (grid[stepNumber][row][col]) {
-      row = getRandomInt(0, DIMS_LENGTH - 1);
-      col = getRandomInt(0, DIMS_WIDTH - 1);
+    // let row = getRandomInt(0, DIMS_LENGTH - 1);
+    // let col = getRandomInt(0, DIMS_WIDTH - 1);
+    // while (grid[stepNumber][row][col]) {
+    //   row = getRandomInt(0, DIMS_LENGTH - 1);
+    //   col = getRandomInt(0, DIMS_WIDTH - 1);
+    // }
+    // move(row, col, players.computer);
+    // setNextMove(players.human);
+    const gridCopy = cloneGrid(grid[stepNumber]);
+    const empty = isEmpty(grid[stepNumber]);
+    let row = 0;
+    let col = 0;
+    let index = null;
+    switch (mode) {
+      case GAME_MODES.easy:
+        row = getRandomInt(0, DIMS_LENGTH - 1);
+        col = getRandomInt(0, DIMS_WIDTH - 1);
+        while (grid[stepNumber][row][col]) {
+          row = getRandomInt(0, DIMS_LENGTH - 1);
+          col = getRandomInt(0, DIMS_WIDTH - 1);
+        }
+        break;
+      case GAME_MODES.medium:
+        const smartMove = !isEmpty(grid[stepNumber]) && Math.random() < 0.5;
+        if (smartMove) {
+          if (DIMS_LENGTH <= 3 && DIMS_WIDTH <= 3) {
+            index = minimax(gridCopy, players.computer)[1];
+          } else {
+            row = getRandomInt(0, DIMS_LENGTH - 1);
+            col = getRandomInt(0, DIMS_WIDTH - 1);
+            while (grid[stepNumber][row][col]) {
+              row = getRandomInt(0, DIMS_LENGTH - 1);
+              col = getRandomInt(0, DIMS_WIDTH - 1);
+            }
+          }
+        } else {
+          row = getRandomInt(0, DIMS_LENGTH - 1);
+          col = getRandomInt(0, DIMS_WIDTH - 1);
+          while (grid[stepNumber][row][col]) {
+            row = getRandomInt(0, DIMS_LENGTH - 1);
+            col = getRandomInt(0, DIMS_WIDTH - 1);
+          }
+        }
+        break;
+      case GAME_MODES.difficult:
+      default:
+        if (DIMS_LENGTH <= 3 && DIMS_WIDTH <= 3) {
+          index = empty
+            ? [
+                getRandomInt(0, DIMS_LENGTH - 1),
+                getRandomInt(0, DIMS_WIDTH - 1),
+              ]
+            : minimax(gridCopy, players.computer)[1];
+        } else {
+          if (getEmptySquares(grid[stepNumber]) <= 5) {
+            index = minimax(gridCopy, players.computer)[1];
+          } else {
+            index = [
+              getRandomInt(0, DIMS_LENGTH - 1),
+              getRandomInt(0, DIMS_WIDTH - 1),
+            ];
+          }
+        }
     }
-    move(row, col, players.computer);
-    setNextMove(players.human);
+    if (index) {
+      [row, col] = index;
+    }
+    if (!grid[stepNumber][row][col]) {
+      move(row, col, players.computer);
+      setNextMove(players.human);
+    }
+    // const col = empty ? getRandomInt(0, DIMS_WIDTH - 1) : minimax(gridCopy, players.computer)[1];
   }, [move, grid, players, stepNumber]);
 
   const jumpTo = (step) => {
@@ -95,6 +169,10 @@ const Game = () => {
         </li>
       );
     });
+  const changeMode = (e) => {
+    setMode(e.target.value);
+  };
+
   useEffect(() => {
     let timeout;
     if (
@@ -140,13 +218,27 @@ const Game = () => {
     default:
       return (
         <div>
+          <p>Choose your Player</p>
           <Button {...buttonStyle} onClick={() => choosePlayer(PLAYER_X)}>
             X
           </Button>
-          <p>or</p>
+          <div>
+            <p>or</p>
+          </div>
           <Button {...buttonStyle} onClick={() => choosePlayer(PLAYER_O)}>
             O
           </Button>
+          <p>Choose difficulty</p>
+          <select onChange={changeMode} value={mode}>
+            {Object.keys(GAME_MODES).map((key) => {
+              const gameMode = GAME_MODES[key];
+              return (
+                <option key={gameMode} value={gameMode}>
+                  {key}
+                </option>
+              );
+            })}
+          </select>
         </div>
       );
     case GAME_STATES.inProgress:
