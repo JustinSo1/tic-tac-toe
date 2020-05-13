@@ -1,6 +1,6 @@
 # Tic-Tac-Toe
 
-The famous paper and pencil game built using functional ReactJs with customizations such as difficulty, and board size.
+The famous paper and pencil game built using functional ReactJs with customizations such as difficulty, and board size. To have a quick demo of the game [click here](https://justinso1.github.io/tic-tac-toe/).
 
 ## Getting Started
 Acquire the files in this repository.
