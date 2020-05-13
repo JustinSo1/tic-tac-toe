@@ -11,11 +11,18 @@ npm install
 npm start
 ```
 ### Prerequisites
+
 node.js (v12.13.1 or above)
 
+Material UI (v4.9.14 or above)
+
 ReactJs (16.13.1 or above)
+
+### Images
+![Image of StartScreen](/images/docs/images/StartScreen.png)
 
 ## Built With
 
 * [Material UI](https://material-ui.com/) - The styling library used
 * [React](https://reactjs.org/) - The web framework used
+* [Node.js](https://nodejs.org/en/) - The runtime environment used
