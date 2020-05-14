@@ -9,14 +9,20 @@ Fork this repository.
 
 Clone the repository through terminal by running ```git clone git@github.com:{YOUR_USERNAME}/tic-tac-toe.git``` 
 
+Install [Node.js](https://nodejs.org/en/])
+
+Install [React](https://reactjs.org/)
+
+Go to the package.json file and change the ```"http://{username}.github.io/tic-tac-toe"``` to your user name
+
 Use the package manager npm to install the dependencies this project requires.
 
-Below command will install the dependencies
+
+1. Install the dependencies
 ```
 npm install
 ```
-The below command will start up the project if npm install was successful 
-
+2. Start up the project 
 ```
 npm start
 ```
