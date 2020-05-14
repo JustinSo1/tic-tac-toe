@@ -17,7 +17,7 @@ import {
   isEmpty,
   getEmptySquares,
 } from "../helpers";
-import { Button, Box } from "@material-ui/core";
+import { Button } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
@@ -79,8 +79,18 @@ const Game = () => {
       setNextMove(players.computer);
     }
   };
+  
 
   const computerMove = useCallback(() => {
+    const getIndexToMove = () => {
+      let row = getRandomInt(0, DIMS_LENGTH - 1);
+      let col = getRandomInt(0, DIMS_WIDTH - 1);
+      while (grid[stepNumber][row][col]) {
+        row = getRandomInt(0, DIMS_LENGTH - 1);
+        col = getRandomInt(0, DIMS_WIDTH - 1);
+      }
+      return [row, col];
+    };
     const gridCopy = cloneGrid(grid[stepNumber]);
     const empty = isEmpty(grid[stepNumber]);
     let row = 0;
@@ -88,12 +98,7 @@ const Game = () => {
     let index = null;
     switch (mode) {
       case GAME_MODES.easy:
-        row = getRandomInt(0, DIMS_LENGTH - 1);
-        col = getRandomInt(0, DIMS_WIDTH - 1);
-        while (grid[stepNumber][row][col]) {
-          row = getRandomInt(0, DIMS_LENGTH - 1);
-          col = getRandomInt(0, DIMS_WIDTH - 1);
-        }
+        [row, col] = getIndexToMove();
         break;
       case GAME_MODES.medium:
         const smartMove = !isEmpty(grid[stepNumber]) && Math.random() < 0.5;
@@ -101,20 +106,10 @@ const Game = () => {
           if (DIMS_LENGTH <= 3 && DIMS_WIDTH <= 3) {
             index = minimax(gridCopy, players.computer)[1];
           } else {
-            row = getRandomInt(0, DIMS_LENGTH - 1);
-            col = getRandomInt(0, DIMS_WIDTH - 1);
-            while (grid[stepNumber][row][col]) {
-              row = getRandomInt(0, DIMS_LENGTH - 1);
-              col = getRandomInt(0, DIMS_WIDTH - 1);
-            }
+            [row, col] = getIndexToMove();
           }
         } else {
-          row = getRandomInt(0, DIMS_LENGTH - 1);
-          col = getRandomInt(0, DIMS_WIDTH - 1);
-          while (grid[stepNumber][row][col]) {
-            row = getRandomInt(0, DIMS_LENGTH - 1);
-            col = getRandomInt(0, DIMS_WIDTH - 1);
-          }
+          [row, col] = getIndexToMove();
         }
         break;
       case GAME_MODES.difficult:
@@ -127,13 +122,10 @@ const Game = () => {
               ]
             : minimax(gridCopy, players.computer)[1];
         } else {
-          if (getEmptySquares(grid[stepNumber]) <= 5) {
+          if (getEmptySquares(grid[stepNumber]).length <= 5) {
             index = minimax(gridCopy, players.computer)[1];
           } else {
-            index = [
-              getRandomInt(0, DIMS_LENGTH - 1),
-              getRandomInt(0, DIMS_WIDTH - 1),
-            ];
+            index = getIndexToMove();
           }
         }
     }
@@ -144,7 +136,7 @@ const Game = () => {
       move(row, col, players.computer);
       setNextMove(players.human);
     }
-  }, [move, grid, players, stepNumber]);
+  }, [move, grid, players, stepNumber, mode]);
 
   const jumpTo = (step) => {
     setStepNumber(step);

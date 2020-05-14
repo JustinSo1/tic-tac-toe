@@ -19,6 +19,7 @@ export const minimax = (board, player) => {
     for (let empty of getEmptySquares(board)) {
       let copy = cloneGrid(board);
 
+      // Pass in empty square
       makeMove(copy, empty, player);
       thisScore = mult * minimax(copy, switchPlayer(player))[0];
 
