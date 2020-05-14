@@ -13,7 +13,9 @@ npm install
 ```
 The below command will start up the project if npm install was successful 
 
-```npm start```
+```
+npm start
+```
 ### Prerequisites
 
 node.js (v12.13.1 or above)
