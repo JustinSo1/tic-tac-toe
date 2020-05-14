@@ -6,10 +6,14 @@ The famous paper and pencil game built using functional ReactJs that can undo an
 Fork this repository.
 Clone the repository through terminal by running git clone git@github.com:{YOUR_USERNAME}/tic-tac-toe.git
 Use the package manager npm to install the dependencies this project requires.
-```bash
-npm install - to install dependencies
-npm start - to start up project
+
+Below command will install the dependencies
 ```
+npm install
+```
+The below command will start up the project if npm install was successful 
+
+```npm start```
 ### Prerequisites
 
 node.js (v12.13.1 or above)
