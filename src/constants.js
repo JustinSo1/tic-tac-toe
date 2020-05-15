@@ -22,3 +22,20 @@ export const GAME_MODES = {
   medium: "medium",
   difficult: "difficult",
 };
+export const marks = [
+  {
+    value: 2,
+    label: "2",
+  },
+  {
+    value: 5,
+    label: "5",
+  },
+  {
+    value: 10,
+
+    label: "10",
+  },
+]
+export const minSize = 2;
+export const maxSize = 10;

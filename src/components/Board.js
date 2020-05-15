@@ -3,7 +3,6 @@ import Square from "./Square";
 import { Box } from "@material-ui/core";
 import { PLAYER_X } from "../constants";
 const Board = ({ squares, onClick }) => {
-
   return (
     <div>
       {squares.map((row, i) => {

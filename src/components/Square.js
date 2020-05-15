@@ -1,7 +1,6 @@
 import React from "react";
 import Box from "@material-ui/core/Box";
 import { SQUARE_DIMS } from "../constants";
-
 const defaultProps = {
   color: "black",
   p: 1,

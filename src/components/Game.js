@@ -8,6 +8,9 @@ import {
   DIMS_LENGTH,
   DIMS_WIDTH,
   GAME_MODES,
+  marks,
+  minSize,
+  maxSize,
 } from "../constants";
 import {
   switchPlayer,
@@ -17,12 +20,14 @@ import {
   isEmpty,
   getEmptySquares,
 } from "../helpers";
-import { Button } from "@material-ui/core";
+import { Button, Box, Select } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
 import { minimax } from "../minimax";
+import Typography from "@material-ui/core/Typography";
+import Slider from "@material-ui/core/Slider";
 
 const arr = Array(DIMS_LENGTH)
   .fill(null)
@@ -37,7 +42,6 @@ const Game = () => {
   const [winner, setWinner] = useState(null);
   const [open, setOpen] = useState(false);
   const [mode, setMode] = useState(GAME_MODES.medium);
-
   const classes = useStyles();
 
   const handleOpen = () => {
@@ -79,7 +83,6 @@ const Game = () => {
       setNextMove(players.computer);
     }
   };
-  
 
   const computerMove = useCallback(() => {
     const getIndexToMove = () => {
@@ -195,33 +198,70 @@ const Game = () => {
     }
   }, [gameState, grid, nextMove, stepNumber]);
 
+  function valuetext(value) {
+    console.log(value);
+    return `${value}`;
+  }
+
   switch (gameState) {
     case GAME_STATES.notStarted:
     default:
       return (
-        <div>
-          <p>Choose your Player</p>
-          <Button {...buttonStyle} onClick={() => choosePlayer(PLAYER_X)}>
-            X
-          </Button>
+        <Box display="flex" justifyContent="center" m={5} p={5}>
           <div>
-            <p>or</p>
+            <Typography gutterBottom="true">Choose your player</Typography>
+            <Button {...buttonStyle} onClick={() => choosePlayer(PLAYER_X)}>
+              X
+            </Button>
+            <Box p={1} m={1}>
+              <Typography gutterBottom="true">Or</Typography>
+            </Box>
+            <Button {...buttonStyle} onClick={() => choosePlayer(PLAYER_O)}>
+              O
+            </Button>
+            <hr />
+            <div>
+              <Typography gutterBottom="true">Choose difficulty</Typography>
+              <Select onChange={changeMode} value={mode}>
+                {Object.keys(GAME_MODES).map((key) => {
+                  const gameMode = GAME_MODES[key];
+                  return (
+                    <option key={gameMode} value={gameMode}>
+                      {key}
+                    </option>
+                  );
+                })}
+              </Select>
+              <hr />
+            </div>
+            <Typography id="discrete-slider-custom" gutterBottom>
+              Length of Game Board In Squares
+            </Typography>
+            <Slider
+              defaultValue={2}
+              getAriaValueText={valuetext}
+              aria-labelledby="discrete-slider-custom"
+              step={1}
+              valueLabelDisplay="auto"
+              marks={marks}
+              min={minSize}
+              max={maxSize}
+            />
+            <Typography id="discrete-slider-custom" gutterBottom>
+              Width of Game Board In Squares
+            </Typography>
+            <Slider
+              defaultValue={2}
+              getAriaValueText={valuetext}
+              aria-labelledby="discrete-slider-custom"
+              step={1}
+              valueLabelDisplay="auto"
+              marks={marks}
+              min={minSize}
+              max={maxSize}
+            />
           </div>
-          <Button {...buttonStyle} onClick={() => choosePlayer(PLAYER_O)}>
-            O
-          </Button>
-          <p>Choose difficulty</p>
-          <select onChange={changeMode} value={mode}>
-            {Object.keys(GAME_MODES).map((key) => {
-              const gameMode = GAME_MODES[key];
-              return (
-                <option key={gameMode} value={gameMode}>
-                  {key}
-                </option>
-              );
-            })}
-          </select>
-        </div>
+        </Box>
       );
     case GAME_STATES.inProgress:
       return (
