@@ -48,9 +48,6 @@ const Game = () => {
       .fill(null)
       .map(() => new Array(width).fill(null)),
   ]);
-  // Getting delayed responses
-  console.log("grid row", grid[stepNumber].length);
-  console.log("grid col", grid[stepNumber][0].length);
 
   const classes = useStyles();
 
@@ -64,26 +61,19 @@ const Game = () => {
 
   const choosePlayer = (option) => {
     setPlayers({ human: option, computer: switchPlayer(option) });
+    setGrid([
+      Array(length)
+        .fill(null)
+        .map(() => new Array(width).fill(null)),
+    ]);
     setGameState(GAME_STATES.inProgress);
     setNextMove(PLAYER_X);
   };
   const setLengthOfBoard = (event, value) => {
-    console.log(value);
     setLength(value);
-    setGrid([
-      Array(length)
-        .fill(null)
-        .map(() => new Array(width).fill(null)),
-    ]);
   };
   const setWidthOfBoard = (event, value) => {
-    console.log(value);
     setWidth(value);
-    setGrid([
-      Array(length)
-        .fill(null)
-        .map(() => new Array(width).fill(null)),
-    ]);
   };
 
   /**
@@ -114,6 +104,8 @@ const Game = () => {
   const startNewGame = () => {
     setGameState(GAME_STATES.notStarted);
     setGrid([arr]);
+    setLength(DIMS_LENGTH);
+    setWidth(DIMS_WIDTH);
     setStepNumber(0);
   };
 
@@ -319,6 +311,7 @@ const Game = () => {
     case GAME_STATES.over:
       return (
         <div>
+          <Box display="flex" justifyContent="center" m={5} p={5}>
           <Button {...buttonStyle} onClick={handleOpen}>
             Result
           </Button>
@@ -344,6 +337,7 @@ const Game = () => {
           <Button {...buttonStyle} onClick={startNewGame}>
             Start over
           </Button>
+          </Box>
         </div>
       );
   }
