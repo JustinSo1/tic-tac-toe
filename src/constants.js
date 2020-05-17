@@ -1,4 +1,4 @@
-export const SQUARE_DIMS = 100;
+export const SQUARE_DIMS = 150;
 // export const DIMS_WIDTH = Math.floor(Math.random() * 5) + 2;
 // export const DIMS_LENGTH = Math.floor(Math.random() * 5) + 2;
 export const DIMS_WIDTH = 3;
