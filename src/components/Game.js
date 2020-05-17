@@ -33,7 +33,7 @@ const arr = Array(DIMS_LENGTH)
   .fill(null)
   .map(() => new Array(DIMS_WIDTH).fill(null));
 
-const Game = () => {
+const Game = ({ toggleDark }) => {
   const [players, setPlayers] = useState({ human: null, computer: null });
   const [stepNumber, setStepNumber] = useState(0);
   const [nextMove, setNextMove] = useState(null);
@@ -241,31 +241,29 @@ const Game = () => {
       return (
         <Box display="flex" justifyContent="center" m={5} p={5}>
           <div>
-            <Typography gutterBottom="true">Choose your player</Typography>
+            <Typography gutterBottom={true}>Choose your player</Typography>
             <Button {...buttonStyle} onClick={() => choosePlayer(PLAYER_X)}>
               X
             </Button>
             <Box p={1} m={1}>
-              <Typography gutterBottom="true">Or</Typography>
+              <Typography gutterBottom={true}>Or</Typography>
             </Box>
             <Button {...buttonStyle} onClick={() => choosePlayer(PLAYER_O)}>
               O
             </Button>
             <hr />
-            <div>
-              <Typography gutterBottom="true">Choose difficulty</Typography>
-              <Select onChange={changeMode} value={mode}>
-                {Object.keys(GAME_MODES).map((key) => {
-                  const gameMode = GAME_MODES[key];
-                  return (
-                    <option key={gameMode} value={gameMode}>
-                      {key}
-                    </option>
-                  );
-                })}
-              </Select>
-              <hr />
-            </div>
+            <Typography gutterBottom={true}>Choose difficulty</Typography>
+            <Select onChange={changeMode} value={mode}>
+              {Object.keys(GAME_MODES).map((key) => {
+                const gameMode = GAME_MODES[key];
+                return (
+                  <option key={gameMode} value={gameMode}>
+                    {key}
+                  </option>
+                );
+              })}
+            </Select>
+            <hr />
             <Typography id="discrete-slider-custom" gutterBottom>
               Length of Game Board In Squares
             </Typography>
@@ -298,6 +296,7 @@ const Game = () => {
                 setWidthOfBoard(event, value)
               }
             />
+            <Button onClick={toggleDark}>Toggle Dark Mode</Button>
           </div>
         </Box>
       );
@@ -312,31 +311,31 @@ const Game = () => {
       return (
         <div>
           <Box display="flex" justifyContent="center" m={5} p={5}>
-          <Button {...buttonStyle} onClick={handleOpen}>
-            Result
-          </Button>
-          <Modal
-            aria-labelledby="title"
-            aria-describedby="description"
-            className={classes.modal}
-            open={open}
-            onClose={handleClose}
-            closeAfterTransition
-            BackdropComponent={Backdrop}
-            BackdropProps={{
-              timeout: 500,
-            }}
-          >
-            <Fade in={open}>
-              <div className={classes.paper}>
-                <h2 id="title">{winner}</h2>
-                <p id="description">Congratulations on finishing the game!</p>
-              </div>
-            </Fade>
-          </Modal>
-          <Button {...buttonStyle} onClick={startNewGame}>
-            Start over
-          </Button>
+            <Button {...buttonStyle} onClick={handleOpen}>
+              Result
+            </Button>
+            <Modal
+              aria-labelledby="title"
+              aria-describedby="description"
+              className={classes.modal}
+              open={open}
+              onClose={handleClose}
+              closeAfterTransition
+              BackdropComponent={Backdrop}
+              BackdropProps={{
+                timeout: 500,
+              }}
+            >
+              <Fade in={open}>
+                <div className={classes.paper}>
+                  <h2 id="title">{winner}</h2>
+                  <p id="description">Congratulations on finishing the game!</p>
+                </div>
+              </Fade>
+            </Modal>
+            <Button {...buttonStyle} onClick={startNewGame}>
+              Start over
+            </Button>
           </Box>
         </div>
       );

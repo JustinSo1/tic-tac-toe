@@ -1,27 +1,30 @@
-import React from "react";
+import React, {useState} from "react";
 import Game from "./components/Game";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
-import CssBaseline from '@material-ui/core/CssBaseline';
+import CssBaseline from "@material-ui/core/CssBaseline";
 
-import { createMuiTheme, ThemeProvider, MuiThemeProvider } from "@material-ui/core/styles";
+import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 
 const App = () => {
-  const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
+  const [theme, setTheme] = useState({
+    palette: {
+      type: "light",
+    },
+  });
+  const toggleDarkTheme = () => {
+    let newPaletteType = theme.palette.type === "light" ? "dark" : "light";
+    setTheme({
+      palette: {
+        type: newPaletteType,
+      },
+    });
+  };
+  const muiTheme = createMuiTheme(theme);
 
-  const theme = React.useMemo(
-    () =>
-      createMuiTheme({
-        palette: {
-          type: prefersDarkMode ? "dark" : "light",
-        },
-      }),
-    [prefersDarkMode]
-  );
   return (
-    <ThemeProvider theme={theme}>
+    <MuiThemeProvider theme={muiTheme}>
       <CssBaseline />
-      <Game />
-    </ThemeProvider>
+      <Game toggleDark={toggleDarkTheme} />
+    </MuiThemeProvider>
   );
 };
 

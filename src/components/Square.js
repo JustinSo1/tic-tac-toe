@@ -1,7 +1,7 @@
 import React from "react";
 import Box from "@material-ui/core/Box";
+// import Typography from "@material-ui/core/Typography";
 import { SQUARE_DIMS } from "../constants";
-import { Typography } from "@material-ui/core";
 const defaultProps = {
   color: "black",
   p: 1,
@@ -29,10 +29,7 @@ const Square = ({
     borderRight={borderRight}
     fontSize={100}
   >
-    {/* <Box width="auto" height="auto"> */}
-    {/* <Typography> */}
-      {value}
-
+    {value}
   </Box>
 );
 export default Square;
