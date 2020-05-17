@@ -8,6 +8,9 @@ import {
   DIMS_LENGTH,
   DIMS_WIDTH,
   GAME_MODES,
+  marks,
+  minSize,
+  maxSize,
 } from "../constants";
 import {
   switchPlayer,
@@ -17,19 +20,20 @@ import {
   isEmpty,
   getEmptySquares,
 } from "../helpers";
-import { Button } from "@material-ui/core";
+import { Button, Box, Select } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
 import { minimax } from "../minimax";
+import Typography from "@material-ui/core/Typography";
+import Slider from "@material-ui/core/Slider";
 
 const arr = Array(DIMS_LENGTH)
   .fill(null)
   .map(() => new Array(DIMS_WIDTH).fill(null));
 
 const Game = () => {
-  const [grid, setGrid] = useState([arr]);
   const [players, setPlayers] = useState({ human: null, computer: null });
   const [stepNumber, setStepNumber] = useState(0);
   const [nextMove, setNextMove] = useState(null);
@@ -37,6 +41,13 @@ const Game = () => {
   const [winner, setWinner] = useState(null);
   const [open, setOpen] = useState(false);
   const [mode, setMode] = useState(GAME_MODES.medium);
+  const [length, setLength] = useState(DIMS_LENGTH);
+  const [width, setWidth] = useState(DIMS_WIDTH);
+  const [grid, setGrid] = useState([
+    Array(length)
+      .fill(null)
+      .map(() => new Array(width).fill(null)),
+  ]);
 
   const classes = useStyles();
 
@@ -50,9 +61,32 @@ const Game = () => {
 
   const choosePlayer = (option) => {
     setPlayers({ human: option, computer: switchPlayer(option) });
+    setGrid([
+      Array(length)
+        .fill(null)
+        .map(() => new Array(width).fill(null)),
+    ]);
     setGameState(GAME_STATES.inProgress);
     setNextMove(PLAYER_X);
   };
+  const setLengthOfBoard = (event, value) => {
+    setLength(value);
+  };
+  const setWidthOfBoard = (event, value) => {
+    setWidth(value);
+  };
+
+  /**
+   * Does a deep copy of the current grid and inserts the
+   * index of the grid with the proper player char
+   * @param {integer} row - Row index of the 2D array
+   * @param {integer} col - Column index of the 2D array
+   * @param {integer} player - the player character
+   *
+   *
+   *
+   *
+   */
   const move = useCallback(
     (row, col, player) => {
       if (player && gameState === GAME_STATES.inProgress) {
@@ -70,6 +104,8 @@ const Game = () => {
   const startNewGame = () => {
     setGameState(GAME_STATES.notStarted);
     setGrid([arr]);
+    setLength(DIMS_LENGTH);
+    setWidth(DIMS_WIDTH);
     setStepNumber(0);
   };
 
@@ -79,15 +115,14 @@ const Game = () => {
       setNextMove(players.computer);
     }
   };
-  
 
   const computerMove = useCallback(() => {
     const getIndexToMove = () => {
-      let row = getRandomInt(0, DIMS_LENGTH - 1);
-      let col = getRandomInt(0, DIMS_WIDTH - 1);
+      let row = getRandomInt(0, grid[stepNumber].length - 1);
+      let col = getRandomInt(0, grid[stepNumber][0].length - 1);
       while (grid[stepNumber][row][col]) {
-        row = getRandomInt(0, DIMS_LENGTH - 1);
-        col = getRandomInt(0, DIMS_WIDTH - 1);
+        row = getRandomInt(0, grid[stepNumber].length - 1);
+        col = getRandomInt(0, grid[stepNumber][0].length - 1);
       }
       return [row, col];
     };
@@ -103,7 +138,7 @@ const Game = () => {
       case GAME_MODES.medium:
         const smartMove = !isEmpty(grid[stepNumber]) && Math.random() < 0.5;
         if (smartMove) {
-          if (DIMS_LENGTH <= 3 && DIMS_WIDTH <= 3) {
+          if (grid[stepNumber].length <= 3 && grid[stepNumber][0].length <= 3) {
             index = minimax(gridCopy, players.computer)[1];
           } else {
             [row, col] = getIndexToMove();
@@ -114,11 +149,11 @@ const Game = () => {
         break;
       case GAME_MODES.difficult:
       default:
-        if (DIMS_LENGTH <= 3 && DIMS_WIDTH <= 3) {
+        if (grid[stepNumber].length <= 3 && grid[stepNumber][0].length <= 3) {
           index = empty
             ? [
-                getRandomInt(0, DIMS_LENGTH - 1),
-                getRandomInt(0, DIMS_WIDTH - 1),
+                getRandomInt(0, grid[stepNumber].length - 1),
+                getRandomInt(0, grid[stepNumber][0].length - 1),
               ]
             : minimax(gridCopy, players.computer)[1];
         } else {
@@ -195,33 +230,76 @@ const Game = () => {
     }
   }, [gameState, grid, nextMove, stepNumber]);
 
+  function valuetext(value) {
+    // console.log(value);
+    return `${value}`;
+  }
+
   switch (gameState) {
     case GAME_STATES.notStarted:
     default:
       return (
-        <div>
-          <p>Choose your Player</p>
-          <Button {...buttonStyle} onClick={() => choosePlayer(PLAYER_X)}>
-            X
-          </Button>
+        <Box display="flex" justifyContent="center" m={5} p={5}>
           <div>
-            <p>or</p>
+            <Typography gutterBottom="true">Choose your player</Typography>
+            <Button {...buttonStyle} onClick={() => choosePlayer(PLAYER_X)}>
+              X
+            </Button>
+            <Box p={1} m={1}>
+              <Typography gutterBottom="true">Or</Typography>
+            </Box>
+            <Button {...buttonStyle} onClick={() => choosePlayer(PLAYER_O)}>
+              O
+            </Button>
+            <hr />
+            <div>
+              <Typography gutterBottom="true">Choose difficulty</Typography>
+              <Select onChange={changeMode} value={mode}>
+                {Object.keys(GAME_MODES).map((key) => {
+                  const gameMode = GAME_MODES[key];
+                  return (
+                    <option key={gameMode} value={gameMode}>
+                      {key}
+                    </option>
+                  );
+                })}
+              </Select>
+              <hr />
+            </div>
+            <Typography id="discrete-slider-custom" gutterBottom>
+              Length of Game Board In Squares
+            </Typography>
+            <Slider
+              defaultValue={3}
+              getAriaValueText={valuetext}
+              aria-labelledby="discrete-slider-custom"
+              step={1}
+              valueLabelDisplay="auto"
+              marks={marks}
+              min={minSize}
+              max={maxSize}
+              onChangeCommitted={(event, value) =>
+                setLengthOfBoard(event, value)
+              }
+            />
+            <Typography id="discrete-slider-custom" gutterBottom>
+              Width of Game Board In Squares
+            </Typography>
+            <Slider
+              defaultValue={3}
+              getAriaValueText={valuetext}
+              aria-labelledby="discrete-slider-custom"
+              step={1}
+              valueLabelDisplay="auto"
+              marks={marks}
+              min={minSize}
+              max={maxSize}
+              onChangeCommitted={(event, value) =>
+                setWidthOfBoard(event, value)
+              }
+            />
           </div>
-          <Button {...buttonStyle} onClick={() => choosePlayer(PLAYER_O)}>
-            O
-          </Button>
-          <p>Choose difficulty</p>
-          <select onChange={changeMode} value={mode}>
-            {Object.keys(GAME_MODES).map((key) => {
-              const gameMode = GAME_MODES[key];
-              return (
-                <option key={gameMode} value={gameMode}>
-                  {key}
-                </option>
-              );
-            })}
-          </select>
-        </div>
+        </Box>
       );
     case GAME_STATES.inProgress:
       return (
@@ -233,6 +311,7 @@ const Game = () => {
     case GAME_STATES.over:
       return (
         <div>
+          <Box display="flex" justifyContent="center" m={5} p={5}>
           <Button {...buttonStyle} onClick={handleOpen}>
             Result
           </Button>
@@ -258,6 +337,7 @@ const Game = () => {
           <Button {...buttonStyle} onClick={startNewGame}>
             Start over
           </Button>
+          </Box>
         </div>
       );
   }
