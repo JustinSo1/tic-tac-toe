@@ -29,6 +29,7 @@ import { minimax } from "../minimax";
 import Typography from "@material-ui/core/Typography";
 import Slider from "@material-ui/core/Slider";
 
+// Prevents unnecessary rerendering
 const arr = Array(DIMS_LENGTH)
   .fill(null)
   .map(() => new Array(DIMS_WIDTH).fill(null));
@@ -51,14 +52,22 @@ const Game = ({ toggleDark }) => {
 
   const classes = useStyles();
 
+  /* Handles open transition of Result button */
   const handleOpen = () => {
     setOpen(true);
   };
 
+  /* Handles close transition of Result button */
   const handleClose = () => {
     setOpen(false);
   };
-
+  /**
+   * Assign a character to the player and dimenstions to the game board.
+   * Allows Player character X to go first.
+   * Starts the game.
+   * @param {integer} option - the player character X = 1, O = 2
+   *
+   */
   const choosePlayer = (option) => {
     setPlayers({ human: option, computer: switchPlayer(option) });
     setGrid([
@@ -69,22 +78,31 @@ const Game = ({ toggleDark }) => {
     setGameState(GAME_STATES.inProgress);
     setNextMove(PLAYER_X);
   };
+
+  /**
+   * Sets the length of the game board
+   * @param {integer} value - The length of the game board
+   *
+   */
   const setLengthOfBoard = (event, value) => {
     setLength(value);
   };
+
+  /**
+   * Sets the length of the game board
+   * @param {integer} value - The width of the game board
+   *
+   */
   const setWidthOfBoard = (event, value) => {
     setWidth(value);
   };
 
   /**
    * Does a deep copy of the current grid and inserts the
-   * index of the grid with the proper player char
+   * index of the grid with the proper player char.
    * @param {integer} row - Row index of the 2D array
    * @param {integer} col - Column index of the 2D array
    * @param {integer} player - the player character
-   *
-   *
-   *
    *
    */
   const move = useCallback(
@@ -101,6 +119,7 @@ const Game = ({ toggleDark }) => {
     },
     [gameState, stepNumber, grid]
   );
+
   const startNewGame = () => {
     setGameState(GAME_STATES.notStarted);
     setGrid([arr]);
@@ -116,6 +135,12 @@ const Game = ({ toggleDark }) => {
     }
   };
 
+  /**
+   * Moves whenever the player character moves. Computer moves based on difficulty.
+   * Easy: Randomized movement
+   * Medium: Minimax activates only 50% of the time and if the grid is 3x3 or smaller
+   * Hard: Minimax activates only if grid is 3x3 or smaller or only 5 squares left in grid
+   */
   const computerMove = useCallback(() => {
     const getIndexToMove = () => {
       let row = getRandomInt(0, grid[stepNumber].length - 1);
@@ -157,7 +182,7 @@ const Game = ({ toggleDark }) => {
               ]
             : minimax(gridCopy, players.computer)[1];
         } else {
-          if (getEmptySquares(grid[stepNumber]).length <= 5) {
+          if (getEmptySquares(grid[stepNumber]).length <= 10) {
             index = minimax(gridCopy, players.computer)[1];
           } else {
             index = getIndexToMove();
@@ -176,6 +201,7 @@ const Game = ({ toggleDark }) => {
   const jumpTo = (step) => {
     setStepNumber(step);
   };
+
   const renderMoves = () =>
     grid.map((_step, move) => {
       const destination = move ? `Go to move #${move}` : "Go to start";
@@ -187,6 +213,7 @@ const Game = ({ toggleDark }) => {
         </li>
       );
     });
+
   const changeMode = (e) => {
     setMode(e.target.value);
   };
@@ -230,14 +257,19 @@ const Game = ({ toggleDark }) => {
     }
   }, [gameState, grid, nextMove, stepNumber]);
 
-  function valuetext(value) {
-    // console.log(value);
+  function valueText(value) {
     return `${value}`;
   }
 
+  /**
+   *
+   * Renders different screen depending on game state
+   *
+   */
   switch (gameState) {
     case GAME_STATES.notStarted:
     default:
+      // Returns customization for the game boards, difficulty, dark mode, and character selection
       return (
         <Box display="flex" justifyContent="center" m={5} p={5}>
           <div>
@@ -253,7 +285,7 @@ const Game = ({ toggleDark }) => {
             </Button>
             <hr />
             <Typography gutterBottom={true}>Choose difficulty</Typography>
-            <Select onChange={changeMode} value={mode}>
+            <Select onChange={changeMode} value={mode} >
               {Object.keys(GAME_MODES).map((key) => {
                 const gameMode = GAME_MODES[key];
                 return (
@@ -269,7 +301,7 @@ const Game = ({ toggleDark }) => {
             </Typography>
             <Slider
               defaultValue={3}
-              getAriaValueText={valuetext}
+              getAriaValueText={valueText}
               aria-labelledby="discrete-slider-custom"
               step={1}
               valueLabelDisplay="auto"
@@ -285,7 +317,7 @@ const Game = ({ toggleDark }) => {
             </Typography>
             <Slider
               defaultValue={3}
-              getAriaValueText={valuetext}
+              getAriaValueText={valueText}
               aria-labelledby="discrete-slider-custom"
               step={1}
               valueLabelDisplay="auto"
@@ -301,6 +333,7 @@ const Game = ({ toggleDark }) => {
         </Box>
       );
     case GAME_STATES.inProgress:
+      // Returns move history and board
       return (
         <>
           <Board squares={grid[stepNumber]} onClick={playerMove} />
@@ -308,36 +341,35 @@ const Game = ({ toggleDark }) => {
         </>
       );
     case GAME_STATES.over:
+      // Returns Result and Start New Game buttons
       return (
-        <div>
-          <Box display="flex" justifyContent="center" m={5} p={5}>
-            <Button {...buttonStyle} onClick={handleOpen}>
-              Result
-            </Button>
-            <Modal
-              aria-labelledby="title"
-              aria-describedby="description"
-              className={classes.modal}
-              open={open}
-              onClose={handleClose}
-              closeAfterTransition
-              BackdropComponent={Backdrop}
-              BackdropProps={{
-                timeout: 500,
-              }}
-            >
-              <Fade in={open}>
-                <div className={classes.paper}>
-                  <h2 id="title">{winner}</h2>
-                  <p id="description">Congratulations on finishing the game!</p>
-                </div>
-              </Fade>
-            </Modal>
-            <Button {...buttonStyle} onClick={startNewGame}>
-              Start over
-            </Button>
-          </Box>
-        </div>
+        <Box display="flex" justifyContent="center" m={5} p={5}>
+          <Button {...buttonStyle} onClick={handleOpen}>
+            Result
+          </Button>
+          <Modal
+            aria-labelledby="title"
+            aria-describedby="description"
+            className={classes.modal}
+            open={open}
+            onClose={handleClose}
+            closeAfterTransition
+            BackdropComponent={Backdrop}
+            BackdropProps={{
+              timeout: 500,
+            }}
+          >
+            <Fade in={open}>
+              <div className={classes.paper}>
+                <h2 id="title">{winner}</h2>
+                <p id="description">Congratulations on finishing the game!</p>
+              </div>
+            </Fade>
+          </Modal>
+          <Button {...buttonStyle} onClick={startNewGame}>
+            Start over
+          </Button>
+        </Box>
       );
   }
 };

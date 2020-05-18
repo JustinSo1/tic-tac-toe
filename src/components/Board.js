@@ -6,6 +6,7 @@ const Board = ({ squares, onClick }) => {
   return (
     <div>
       {squares.map((row, i) => {
+        // Handles corner cases then makes everything else a box border
         return (
           <Box display="flex" justifyContent="center" key={i}>
             {row.map((col, j) => {
@@ -14,13 +15,16 @@ const Board = ({ squares, onClick }) => {
               let borderBottom;
               let borderRight;
               const activeSquare = col !== null;
+              // For first row always allow bottom border
               if (i === 0) {
                 borderBottom = 1;
-                if (j === 0 || j !== row.length - 1) {
+                // For every column except the last make border right
+                if (j !== row.length - 1) {
                   borderRight = 1;
                 }
+                // Make a right border for every column except the last 
               } else if (i === squares.length - 1) {
-                if (j === 0 || j !== row.length - 1) {
+                if (j !== row.length - 1) {
                   borderRight = 1;
                 }
               } else {
