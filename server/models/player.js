@@ -1,6 +1,6 @@
-import { Schema, model } from "mongoose";
+const mongoose = require("mongoose");
 
-const playerSchema = new Schema({
+const playerSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
@@ -17,4 +17,4 @@ playerSchema.set("toJSON", {
   },
 });
 
-export default model("Player", playerSchema);
+module.exports = mongoose.model("Player", playerSchema);
