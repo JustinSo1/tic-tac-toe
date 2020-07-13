@@ -20,6 +20,7 @@ import {
   isEmpty,
   getEmptySquares,
 } from "../helpers";
+import Leaderboard from "./Leaderboard";
 import { Button, Box, Select } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import Modal from "@material-ui/core/Modal";
@@ -285,7 +286,7 @@ const Game = ({ toggleDark }) => {
             </Button>
             <hr />
             <Typography gutterBottom={true}>Choose difficulty</Typography>
-            <Select onChange={changeMode} value={mode} >
+            <Select onChange={changeMode} value={mode}>
               {Object.keys(GAME_MODES).map((key) => {
                 const gameMode = GAME_MODES[key];
                 return (
@@ -369,6 +370,7 @@ const Game = ({ toggleDark }) => {
           <Button {...buttonStyle} onClick={startNewGame}>
             Start over
           </Button>
+          <Leaderboard />
         </Box>
       );
   }
